@@ -12,6 +12,10 @@ const InputChecks = styled.div`
             border-color: ${brand500};
             background: ${brand100};            
         }
+
+        &:disabled:checked + label {
+            background: transparent;
+        }
     }
 
     > label {

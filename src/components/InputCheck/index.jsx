@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import IconCheck from '../IconCheck';
 import InputChecks from './Style';
 
-function InputCheck({ name, id, checkIds, handler, label, children }) {
+function InputCheck({ name, id, checkIds, handler, label, children, disabled }) {
     const [checkState, setCheckState] = useState(false);
     const onChangeCheck = useCallback((e) => {
         handler(e.target.id);
@@ -25,7 +25,7 @@ function InputCheck({ name, id, checkIds, handler, label, children }) {
 
     return (
         <InputChecks>
-            <input type='checkbox' name={name} id={id} checked={checkState} onChange={onChangeCheck} />
+            <input type='checkbox' name={name} id={id} checked={checkState} onChange={onChangeCheck} disabled={disabled} />
             <label htmlFor={id}>
                 {label && <p>{label}</p>}
                 {children}
@@ -44,6 +44,7 @@ InputCheck.propTypes = {
     handler: PropTypes.func.isRequired,
     label: PropTypes.string,
     children: PropTypes.node,
+    disabled: PropTypes.bool,
 };
 
 export default InputCheck;

@@ -11,6 +11,6 @@ for (let i = 0; i < length; i++) {
     });
 }
 
-const dateData = data;
+const scheduleData = data;
 
-export default dateData;
+export default scheduleData;

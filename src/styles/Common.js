@@ -26,6 +26,10 @@ export const Dividers = styled.div`
     margin: 24px 0;
     background: ${midnight100};
 
+    ${props => props.gutter && `
+        margin: ${props.gutter}px 0;
+    `}
+
     ${props => props.type2 && `
         width: calc(100% + 48px);
         height: 8px;
@@ -154,6 +158,10 @@ export const FieldTitles = styled.div`
             font-size: 12px;
             font-weight: 700;
             color: ${brand500};
+
+            &.type2 {
+                color: ${midnight500};
+            }
         }
 
         > button {
@@ -265,16 +273,19 @@ export const InputTexts = styled.input`
 `;
 
 export const InputTextAreas = styled.textarea`
+    display: inline-block;
     width: 100%;
     height: auto;
     min-height: 162px;
     padding: 16px 20px;
     border: 1px solid transparent;
     border-radius: 8px;
+    vertical-align: top;
     background: ${slate100};
     word-break: break-all;
     resize: none;
     transition: height 0.1s;
+    ${props => props.fontSize && `font-size: ${props.fontSize}px`};
     
     &::-webkit-scrollbar {
         display: none;
