@@ -4,14 +4,14 @@ import icon_arrow_down from '../../assets/images/icon_arrow_down.svg';
 
 const { brand500} = color;
 
-const ScheduleLists = styled.article`
-    .form-schedule-input {
+const SimpleQuestionLists = styled.article`
+    .form-question-input {
         > div {
             padding-bottom: 16px;
         }
     }
 
-    .form-schedule-more {
+    .form-question-more {
         padding: 16px 0;
         text-align: center;
 
@@ -33,4 +33,4 @@ const ScheduleLists = styled.article`
     }    
 `;
 
-export default ScheduleLists;
+export default SimpleQuestionLists;

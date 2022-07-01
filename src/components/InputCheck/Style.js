@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import { color } from '../../styles/Variable';
 import { hidden } from '../../styles/Mixin';
 
-const { brand100, brand500,midnight200  } = color
+const { brand100, brand500, midnight200, midnight400 } = color
 
 const InputChecks = styled.div`
     > input[type='checkbox'] {
@@ -13,8 +13,9 @@ const InputChecks = styled.div`
             background: ${brand100};            
         }
 
-        &:disabled:checked + label {
-            background: transparent;
+        &:disabled + label {
+            opacity: 0.5;
+            color: ${midnight400};
         }
     }
 
@@ -27,11 +28,20 @@ const InputChecks = styled.div`
         border-radius: 8px;
         font-size: 16px;
         font-weight: 700;
+        word-break: break-all;
     }
 
     .check-icon {
-        width: 24px;
+        width: 18px;
+        margin-left: 18px;
         text-align: center;
+    }
+
+    &.type2 {
+        > label {
+            font-size: 14px;
+            font-weight: 400;
+        }
     }
 `;
 

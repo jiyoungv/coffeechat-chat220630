@@ -1,10 +1,9 @@
-import { useEffect, useState, useCallback } from 'react';
-import { FieldTitles, Dividers, Cautions, FloatButtons, Buttons, InputTexts, InputTextAreas } from '../../styles/Common';
+import { useEffect, useState, useCallback, useMemo } from 'react';
+import { FieldTitles, Dividers, FloatButtons, Buttons, InputTextAreas } from '../../styles/Common';
 import ChatRequestForms from './Style';
-import ScheduleList from '../ScheduleList';
-import CheckSchedule from '../CheckSchedule';
-import scheduleData from '../../tempData/scheduleData';
-import useInputText from '../../hooks/useInputText';
+import SimpleQuestionList from '../SimpleQuestionList';
+import SelectSchedule from '../SelectSchedule';
+import myData from '../../tempData/myData';
 import useInputCheck from '../../hooks/useInputCheck';
 import { priceToString } from '../../utils/func';
 
@@ -13,27 +12,63 @@ function ChatRequestForm() {
     const originalAmount = 14900;
     const finalAmount = 4900;
 
-    // 일정 선택
-    const checkSchedulesIds = [scheduleData[0].id, scheduleData[1].id, scheduleData[2].id];
-    const [checkSchedules, handlerSchedule] = useInputCheck(checkSchedulesIds);
+    // 캘린더 임시 데이터
+    const calendar1 = useMemo(() => ({
+        id: 'calendar1',
+        schedule: { date: '6/1 (월)', time: '8:00 PM ~ 9:00 PM' }
+    }), []);
+    const calendar2 = useMemo(() => ({
+        id: 'calendar2',
+        schedule: { date: '6/2 (월)', time: '8:00 PM ~ 9:00 PM' }
+    }), []);
+    const calendar3 = useMemo(() => ({
+        id: 'calendar3',
+        schedule: { date: '6/3 (월)', time: '8:00 PM ~ 9:00 PM' }
+    }), []);        
+
+    // 첫번째 일정
     const [schedule1, setSchedule1] = useState(null);
     const onClickSchedule1 = useCallback(() => {
-        setSchedule1(scheduleData[0].schedule);
-    }, []);
+        setSchedule1(calendar1);
+    }, [calendar1]);
+
+    // 두번째 일정
     const [schedule2, setSchedule2] = useState(null);
     const onClickSchedule2 = useCallback(() => {
-        setSchedule2(scheduleData[1].schedule);
-    }, []);
+        setSchedule2(calendar2);
+    }, [calendar2]);
+
+    // 세번째 일정
     const [schedule3, setSchedule3] = useState(null);
     const onClickSchedule3 = useCallback(() => {
-        setSchedule3(scheduleData[2].schedule);
+        setSchedule3(calendar3);
+    }, [calendar3]);
+
+    // 무엇이 궁금한가요 탭
+    const [questionTab, setQuestionTab] = useState(0);
+    const onChangeQuestionTab = useCallback((index) => () => {
+        setQuestionTab(index);
     }, []);
 
-    // 간단히 선택
-    // const [checkSimpleQuestions, handlerSimpleQuestion] = useInputCheck();
+    // 간단히 선택할게요
+    const simpleQuestionMinLength = 2;
+    const simpleQuestionMaxLength = 5;
+    const [checkSimpleQuestions, handlerSimpleQuestion] = useInputCheck();
+    const checkDisabledSimpleQuestion = useCallback((disabled) => {
+        if (disabled) {
+            alert(`${simpleQuestionMaxLength}개 모두 선택했습니다 (토스트 노출 필요)`);
+        }
+    }, []);
 
-    // 직접 작성
-    // const [detailQuestion, setDetailQuestion] = useState();
+    // 직접 작성할래요
+    const detailQuestionMinLength = 50;
+    const detailQuestionMaxLength = 500;
+    const [detailQuestion, setDetailQuestion] = useState('');
+    const [detailQuestionLength, setDetailQuestionLength] = useState(detailQuestion.length);
+    const onChangeDetailQuestion = useCallback((e) => {
+        setDetailQuestion(e.target.value);
+        setDetailQuestionLength(e.target.value.length);
+    }, []);
 
     // 메시지
     const messageMaxLength = 500;
@@ -47,21 +82,25 @@ function ChatRequestForm() {
     // 다음 버튼 활성화 여부
     const [canSubmit, setCanSubmit] = useState(false);
     useEffect(() => {
-        if (schedule1 === null || schedule2 === null || schedule3 === null) return;
-        
+        if (schedule1 === null || schedule2 === null || schedule3 === null) return; // 일정 체크
+        if (checkSimpleQuestions.length < simpleQuestionMinLength) return; // 간단히 선택할게요 체크
+        if (detailQuestion.length < detailQuestionMinLength) return; // 직접 작성할래요 체크
+
         setCanSubmit(true);
 
         return () => {
             setCanSubmit(false);
         }
-    }, [schedule1, schedule2, schedule3]);
+    }, [schedule1, schedule2, schedule3, checkSimpleQuestions, detailQuestion]);
 
     // 다음
     const onSubmitRequest = useCallback((e) => {
         e.preventDefault();
 
-        console.log(`첫번째 일정: ${schedule1}\n두번째 일정: ${schedule2}\n세번째 일정: ${schedule3}\n추가 궁금한 사항: ${message}`);
-    }, [schedule1, schedule2, schedule3, message]);
+        console.log(`첫번째 일정: ${schedule1}\n두번째 일정: ${schedule2}\n세번째 일정: ${schedule3}`);
+        console.log(`간단히 선택할게요 ID: ${checkSimpleQuestions}`);
+        console.log(`추가 궁금한 사항: ${message}`);
+    }, [schedule1, schedule2, schedule3, checkSimpleQuestions, message]);
 
     return (
         <ChatRequestForms onSubmit={onSubmitRequest}>
@@ -79,7 +118,7 @@ function ChatRequestForm() {
             </article>
             <Dividers/>
             <article className='form-schedule'>
-                <FieldTitles>
+                <FieldTitles mb={24}>
                     <div className='title'>
                         <h6>일정은 언제로 할까요?</h6>
                         <small className='type2'>현지 시각 기준 선택</small>
@@ -90,19 +129,19 @@ function ChatRequestForm() {
                         <li>
                             {schedule1 === null
                                 ? <button type='button' className='form-schedule-button' onClick={onClickSchedule1}>첫번째 일정 선택하기</button>
-                                : <CheckSchedule name={'schedule'} id={checkSchedulesIds[0]} checkIds={checkSchedules} handler={handlerSchedule} data={schedule1} disabled={true} />
+                                : <SelectSchedule data={schedule1.schedule} />
                             }
                         </li>
                         <li>
                             {schedule2 === null
                                 ? <button type='button' className='form-schedule-button' onClick={onClickSchedule2}>두번째 일정 선택하기</button>
-                                : <CheckSchedule name={'schedule'} id={checkSchedulesIds[1]} checkIds={checkSchedules} handler={handlerSchedule} data={schedule2} disabled={true} />
+                                : <SelectSchedule data={schedule2.schedule} />
                             }
                         </li>
                         <li>
                             {schedule3 === null
                                 ? <button type='button' className='form-schedule-button' onClick={onClickSchedule3}>세번째 일정 선택하기</button>
-                                : <CheckSchedule name={'schedule'} id={checkSchedulesIds[2]} checkIds={checkSchedules} handler={handlerSchedule} data={schedule3} disabled={true} />
+                                : <SelectSchedule data={schedule3.schedule} />
                             }
                         </li>
                     </ul>
@@ -113,34 +152,28 @@ function ChatRequestForm() {
                 <FieldTitles>
                     <div className='title'>
                         <h6>무엇이 궁금한가요?</h6>
-                        <small className='type2'>최소 2개 (최대 5개) 선택</small>
+                        <small className='type2'>최소 {simpleQuestionMinLength}개 (최대 {simpleQuestionMaxLength}개) 선택</small>
                     </div>
                 </FieldTitles>
-                <div>
-                    {/* <Tabs onChange={(key) => {console.log(key)})}>
-                        <TabContent tab='tab1' key='1' content={<div>탭컨텐츠1</div>}>
-                        <TabContent tab='tab2' key='2' content={<div>탭컨텐츠2</div>}>
-                    <Tabs/> */}
-                    <ul>
-                        <li>
-                            <input type='checkbox' name='tab' id='tab1' />
-                            <label for='tab1'>간단히 선택할게요</label>
+                {/* <Tab name={'question-tab'} onChange={onChangeQuestionTab} labels={['간단히 선택할게요', '직접 작성할래요']} /> */}
+                <ul>
+                    {['간단히 선택할게요', '직접 작성할래요'].map((v, i) => (
+                        <li key={i}>
+                            <input type='radio' name={'radio'} id={`radio${i}`} onChange={onChangeQuestionTab(i)} checked={questionTab === i} />
+                            <label htmlFor={`radio${i}`}>{v}</label>
                         </li>
-                        <li>
-                            <input type='checkbox' name='tab' id='tab2' />
-                            <label for='tab2'>직접 작성할래요</label>
-                        </li>
-                    </ul>
-                    {/* {tab1 && 
-                        <QuestionList />
-                    }
-                    {tab2 && 
-                        <div>
-                            textarea
-                        </div>
-                    } */}
-                </div>
-                {/* <ScheduleList name={'question'} handler={handlerSimpleQuestion} data={[]} checkIds={checkSimpleQuestions} /> */}
+                    ))}                  
+                </ul>
+
+                {questionTab === 0 && <SimpleQuestionList name={'simple-question'} handler={handlerSimpleQuestion} data={myData.simpleQuestions} checkIds={checkSimpleQuestions} maxCheckLength={simpleQuestionMaxLength} checkDisabled={checkDisabledSimpleQuestion} />}
+                {questionTab === 1 && 
+                    <div className='form-detail-question-input'>
+                        <div className='form-detail-question-length'>
+                            {detailQuestionLength}/{detailQuestionMaxLength}자 (공백포함 최소 {detailQuestionMinLength}자)
+                        </div>                        
+                        <InputTextAreas value={detailQuestion} onChange={onChangeDetailQuestion} maxLength={detailQuestionMaxLength} fontSize={16} minHeight={327} placeholder={'안녕하세요, 커리어 전환을 고민하고 있는 현재 MBA 재학생입니다.\n\nQ. 대기업에서 해외 MBA 후 컨설팅으로 가는 케이스가 많은가요?\nQ. 최근 컨설턴트들의 넥스트 커리어는 어떻게 되나요?\nQ. 스타트업로의 이동이 정말 많은 편인가요? 포지션은 전략일까요?'}></InputTextAreas>
+                    </div>
+                }
             </article>
             <Dividers gutter={32} />            
             <article className='form-message'>
@@ -151,9 +184,9 @@ function ChatRequestForm() {
                 </FieldTitles>
                 <div className='form-message-input'>
                     <InputTextAreas value={message} onChange={onChangeMessage} maxLength={messageMaxLength} fontSize={16} placeholder={'가장 궁금한 내용을 포함하여 파트너에게 미리 전하고 싶은 메시지를 자유롭게 작성해 보세요.'}></InputTextAreas>
-                </div>
-                <div className='form-message-length'>
-                    {messageLength}/{messageMaxLength}자
+                    <div className='form-message-length'>
+                        {messageLength}/{messageMaxLength}자
+                    </div>
                 </div>
             </article>
             <FloatButtons>

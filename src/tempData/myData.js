@@ -6,7 +6,7 @@ for (let i = 1; i < 11; i++) {
         id: shortid.generate(),
         date: `2022. 7. ${i}`,
         partner: `파트너${i}`,
-        question: `${this.date}에 ${this.partner}과의 커피챗에서 질문했던 내용입니다.`
+        question: '이전 커피챗에서 질문했던 내용입니다.'
     });
 }
 

@@ -286,6 +286,7 @@ export const InputTextAreas = styled.textarea`
     resize: none;
     transition: height 0.1s;
     ${props => props.fontSize && `font-size: ${props.fontSize}px`};
+    ${props => props.minHeight && `min-height: ${props.minHeight}px`};
     
     &::-webkit-scrollbar {
         display: none;

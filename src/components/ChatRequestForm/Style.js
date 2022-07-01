@@ -99,6 +99,13 @@ const ChatRequestForms = styled.form`
         }
     }
 
+    .form-detail-question-length {
+        margin-bottom: 8px;
+        color: ${midnight600};
+        font-size: 13px;
+        text-align: right;
+    }
+
     .form-message {
         padding-bottom: 24px;
     }
