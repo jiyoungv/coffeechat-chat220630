@@ -4,7 +4,7 @@ import icon_information from '../../assets/images/icon_information.svg';
 
 const { midnight400, midnight500, slate100, slate200 } = color;
 
-const speed = '1=0.3s';
+const speed = '0.3s';
 const contentTopHeight = '114px';
 
 const BeforeQuestions = styled.article`
@@ -119,9 +119,11 @@ const BeforeQuestions = styled.article`
         padding-top: 16px;
         max-height: calc(100% - ${contentTopHeight});
         overflow-y: auto;
+        transition: all ${speed};
+    
         &::-webkit-scrollbar {
-        display: none;
-    }        
+            display: none;
+        }
 
         > li {
             margin-bottom: 24px;

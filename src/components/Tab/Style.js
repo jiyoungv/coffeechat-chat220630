@@ -12,6 +12,10 @@ const Tabs = styled.ul`
     border-radius: 8px;
     background: ${bg};
 
+    &:focus {
+        outline: none;
+    }
+
     &::before {
         content: '';
         z-index: 1;
