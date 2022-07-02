@@ -8,11 +8,15 @@ const SimpleQuestionLists = styled.article`
     .form-question-input {
         > div {
             padding-bottom: 16px;
+
+            &:last-child {
+                padding-bottom: 0;                
+            }
         }
     }
 
     .form-question-more {
-        padding: 16px 0;
+        padding-top: 20px;
         text-align: center;
 
         button {

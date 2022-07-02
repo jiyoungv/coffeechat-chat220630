@@ -1,8 +1,10 @@
 import { useEffect, useState, useCallback, useMemo } from 'react';
-import { FieldTitles, Dividers, FloatButtons, Buttons, InputTextAreas } from '../../styles/Common';
+import { FieldTitles, Dividers, Buttons, InputTextAreas } from '../../styles/Common';
 import ChatRequestForms from './Style';
 import SimpleQuestionList from '../SimpleQuestionList';
 import SelectSchedule from '../SelectSchedule';
+import Tab from '../Tab';
+import BeforeQuestion from '../BeforeQuestion';
 import myData from '../../tempData/myData';
 import useInputCheck from '../../hooks/useInputCheck';
 import { priceToString } from '../../utils/func';
@@ -18,11 +20,11 @@ function ChatRequestForm() {
         schedule: { date: '6/1 (월)', time: '8:00 PM ~ 9:00 PM' }
     }), []);
     const calendar2 = useMemo(() => ({
-        id: 'calendar2',
+        id: 'calendar5',
         schedule: { date: '6/2 (월)', time: '8:00 PM ~ 9:00 PM' }
     }), []);
     const calendar3 = useMemo(() => ({
-        id: 'calendar3',
+        id: 'calendar11',
         schedule: { date: '6/3 (월)', time: '8:00 PM ~ 9:00 PM' }
     }), []);        
 
@@ -45,8 +47,9 @@ function ChatRequestForm() {
     }, [calendar3]);
 
     // 무엇이 궁금한가요 탭
-    const [questionTab, setQuestionTab] = useState(0);
-    const onChangeQuestionTab = useCallback((index) => () => {
+    const questionDefaultIndex = 0;
+    const [questionTab, setQuestionTab] = useState(questionDefaultIndex);
+    const onChangeQuestionTab = useCallback((index) => {
         setQuestionTab(index);
     }, []);
 
@@ -60,6 +63,15 @@ function ChatRequestForm() {
         }
     }, []);
 
+    // 메시지
+    const messageMaxLength = 500;
+    const [message, setMessage] = useState('');
+    const [messageLength, setMessageLength] = useState(message.length);
+    const onChangeMessage = useCallback((e) => {
+        setMessage(e.target.value);
+        setMessageLength(e.target.value.length);
+    }, []);
+
     // 직접 작성할래요
     const detailQuestionMinLength = 50;
     const detailQuestionMaxLength = 500;
@@ -70,21 +82,20 @@ function ChatRequestForm() {
         setDetailQuestionLength(e.target.value.length);
     }, []);
 
-    // 메시지
-    const messageMaxLength = 500;
-    const [message, setMessage] = useState('');
-    const [messageLength, setMessageLength] = useState(message.length);
-    const onChangeMessage = useCallback((e) => {
-        setMessage(e.target.value);
-        setMessageLength(e.target.value.length);
+    // 이전 질문 확인하기 바텀시트
+    const [beforeQuestionOpen, setBeforeQuestionOpen] = useState(false);
+    const onOpenBeforeQuestion = useCallback(() => {
+        setBeforeQuestionOpen(true);
     }, []);
+    const onCloseBeforeQuestion = useCallback(() => {
+        setBeforeQuestionOpen(false);
+    }, []);    
 
     // 다음 버튼 활성화 여부
     const [canSubmit, setCanSubmit] = useState(false);
     useEffect(() => {
         if (schedule1 === null || schedule2 === null || schedule3 === null) return; // 일정 체크
-        if (checkSimpleQuestions.length < simpleQuestionMinLength) return; // 간단히 선택할게요 체크
-        if (detailQuestion.length < detailQuestionMinLength) return; // 직접 작성할래요 체크
+        if (checkSimpleQuestions.length < simpleQuestionMinLength && detailQuestion.length < detailQuestionMinLength) return; // 무엇이 궁금한가요 체크
 
         setCanSubmit(true);
 
@@ -97,10 +108,11 @@ function ChatRequestForm() {
     const onSubmitRequest = useCallback((e) => {
         e.preventDefault();
 
-        console.log(`첫번째 일정: ${schedule1}\n두번째 일정: ${schedule2}\n세번째 일정: ${schedule3}`);
+        console.log(`첫번째 일정 ID: ${schedule1.id}\n두번째 일정 ID: ${schedule2.id}\n세번째 일정 ID: ${schedule3.id}`);
         console.log(`간단히 선택할게요 ID: ${checkSimpleQuestions}`);
+        console.log(`직접 작성할래요: ${detailQuestion}`);
         console.log(`추가 궁금한 사항: ${message}`);
-    }, [schedule1, schedule2, schedule3, checkSimpleQuestions, message]);
+    }, [schedule1, schedule2, schedule3, checkSimpleQuestions, detailQuestion, message]);
 
     return (
         <ChatRequestForms onSubmit={onSubmitRequest}>
@@ -149,49 +161,48 @@ function ChatRequestForm() {
             </article>
             <Dividers gutter={40} />
             <article className='form-question'>
-                <FieldTitles>
-                    <div className='title'>
-                        <h6>무엇이 궁금한가요?</h6>
-                        <small className='type2'>최소 {simpleQuestionMinLength}개 (최대 {simpleQuestionMaxLength}개) 선택</small>
-                    </div>
-                </FieldTitles>
-                {/* <Tab name={'question-tab'} onChange={onChangeQuestionTab} labels={['간단히 선택할게요', '직접 작성할래요']} /> */}
-                <ul>
-                    {['간단히 선택할게요', '직접 작성할래요'].map((v, i) => (
-                        <li key={i}>
-                            <input type='radio' name={'radio'} id={`radio${i}`} onChange={onChangeQuestionTab(i)} checked={questionTab === i} />
-                            <label htmlFor={`radio${i}`}>{v}</label>
-                        </li>
-                    ))}                  
-                </ul>
-
-                {questionTab === 0 && <SimpleQuestionList name={'simple-question'} handler={handlerSimpleQuestion} data={myData.simpleQuestions} checkIds={checkSimpleQuestions} maxCheckLength={simpleQuestionMaxLength} checkDisabled={checkDisabledSimpleQuestion} />}
-                {questionTab === 1 && 
-                    <div className='form-detail-question-input'>
-                        <div className='form-detail-question-length'>
-                            {detailQuestionLength}/{detailQuestionMaxLength}자 (공백포함 최소 {detailQuestionMinLength}자)
-                        </div>                        
-                        <InputTextAreas value={detailQuestion} onChange={onChangeDetailQuestion} maxLength={detailQuestionMaxLength} fontSize={16} minHeight={327} placeholder={'안녕하세요, 커리어 전환을 고민하고 있는 현재 MBA 재학생입니다.\n\nQ. 대기업에서 해외 MBA 후 컨설팅으로 가는 케이스가 많은가요?\nQ. 최근 컨설턴트들의 넥스트 커리어는 어떻게 되나요?\nQ. 스타트업로의 이동이 정말 많은 편인가요? 포지션은 전략일까요?'}></InputTextAreas>
-                    </div>
-                }
-            </article>
-            <Dividers gutter={32} />            
-            <article className='form-message'>
                 <FieldTitles mb={24}>
                     <div className='title'>
-                        <h6>더 궁금한 점은 메시지를 남겨 주세요.</h6>
+                        <h6>무엇이 궁금한가요?</h6>
+                        {questionTab === 0 && <small className='type2'>최소 {simpleQuestionMinLength}개 (최대 {simpleQuestionMaxLength}개) 선택</small>}
+                        {questionTab === 1 && <button type='button' className='type2' onClick={onOpenBeforeQuestion}>나의 이전 질문 확인하기</button>}
+                        {beforeQuestionOpen && <BeforeQuestion close={!beforeQuestionOpen} onClose={onCloseBeforeQuestion} />}
                     </div>
                 </FieldTitles>
-                <div className='form-message-input'>
-                    <InputTextAreas value={message} onChange={onChangeMessage} maxLength={messageMaxLength} fontSize={16} placeholder={'가장 궁금한 내용을 포함하여 파트너에게 미리 전하고 싶은 메시지를 자유롭게 작성해 보세요.'}></InputTextAreas>
-                    <div className='form-message-length'>
-                        {messageLength}/{messageMaxLength}자
-                    </div>
+                <Tab handler={onChangeQuestionTab} labels={['간단히 선택할게요', '직접 작성할래요']} defaultIndex={questionDefaultIndex} />
+                <div className='form-question-input'>
+                    {questionTab === 0 && <SimpleQuestionList name={'simple-question'} handler={handlerSimpleQuestion} data={myData.simpleQuestions} checkIds={checkSimpleQuestions} maxCheckLength={simpleQuestionMaxLength} checkDisabled={checkDisabledSimpleQuestion} />}
+                    {questionTab === 1 && 
+                        <div className='form-detail-question-input'>
+                            <div className='form-detail-question-length'>
+                                {detailQuestionLength}/{detailQuestionMaxLength}자 (공백포함 최소 {detailQuestionMinLength}자)
+                            </div>                        
+                            <InputTextAreas value={detailQuestion} onChange={onChangeDetailQuestion} maxLength={detailQuestionMaxLength} fontSize={16} minHeight={327} placeholder={'안녕하세요, 커리어 전환을 고민하고 있는 현재 MBA 재학생입니다.\n\nQ. 대기업에서 해외 MBA 후 컨설팅으로 가는 케이스가 많은가요?\nQ. 최근 컨설턴트들의 넥스트 커리어는 어떻게 되나요?\nQ. 스타트업로의 이동이 정말 많은 편인가요? 포지션은 전략일까요?'}></InputTextAreas>
+                        </div>
+                    }
                 </div>
             </article>
-            <FloatButtons>
+            {questionTab === 0 &&
+                <>
+                    <Dividers gutter={32} />            
+                    <article className='form-message'>
+                        <FieldTitles mb={24}>
+                            <div className='title'>
+                                <h6>더 궁금한 점은 메시지를 남겨 주세요.</h6>
+                            </div>
+                        </FieldTitles>
+                        <div className='form-message-input'>
+                            <div className='form-message-length'>
+                                {messageLength}/{messageMaxLength}자
+                            </div>                            
+                            <InputTextAreas value={message} onChange={onChangeMessage} maxLength={messageMaxLength} fontSize={16} placeholder={'가장 궁금한 내용을 포함하여 파트너에게 미리 전하고 싶은 메시지를 자유롭게 작성해 보세요.'}></InputTextAreas>
+                        </div>
+                    </article>
+                </>
+            }
+            <div className='form-submit'>
                 <Buttons type='submit' disabled={!canSubmit}>다음 : 결제하기</Buttons>
-            </FloatButtons>
+            </div>
         </ChatRequestForms>
     );
 }

@@ -89,6 +89,7 @@ export const PageTitles = styled.div`
         font-size: 20px;
         font-weight: 700;
         letter-spacing: -0.03em;
+        word-break: break-all;
 
         &:last-child {
             margin-bottom: 0;
@@ -168,6 +169,11 @@ export const FieldTitles = styled.div`
             color: ${midnight500};
             font-size: 12px;
             text-decoration: underline;
+
+            &.type2 {
+                color: ${brand500};
+                font-weight: 700;
+            }
         }
     }
 

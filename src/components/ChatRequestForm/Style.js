@@ -99,6 +99,14 @@ const ChatRequestForms = styled.form`
         }
     }
 
+    .form-question-input {
+        margin-top: 24px;
+    }
+
+    .form-detail-question-input {
+        padding-bottom: 40px;
+    }
+
     .form-detail-question-length {
         margin-bottom: 8px;
         color: ${midnight600};
@@ -107,19 +115,22 @@ const ChatRequestForms = styled.form`
     }
 
     .form-message {
-        padding-bottom: 24px;
+        padding-bottom: 40px;
     }
 
     .form-message-input {
-        margin-top: 15px;
     }
 
     .form-message-length {
-        margin-top: 8px;
+        margin-bottom: 8px;
         color: ${midnight600};
         font-size: 13px;
         text-align: right;
     }
+
+    .form-submit {
+        padding: 24px 0 42px;
+    }    
 `;
 
 export default ChatRequestForms;
