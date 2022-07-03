@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useMemo } from 'react';
+import { useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import { FieldTitles, Dividers, Buttons, InputTextAreas, InputTextAreaWraps, InputTextAreaPlaceHolders } from '../../styles/Common';
 import ChatRequestForms from './Style';
 import SimpleQuestionList from '../SimpleQuestionList';
@@ -72,6 +72,14 @@ function ChatRequestForm() {
         setMessageLength(e.target.value.length);
     }, []);
 
+    // 메시지 100자 이상시 scroll to top
+    const messageEl = useRef();
+    const onBlurMessage = useCallback(() => {
+        if (message.length >= 100) {
+            messageEl.current.scrollTo(0, 0);
+        }
+    }, [message]);
+
     // 직접 작성할래요
     const detailQuestionMinLength = 50;
     const detailQuestionMaxLength = 500;
@@ -81,6 +89,14 @@ function ChatRequestForm() {
         setDetailQuestion(e.target.value);
         setDetailQuestionLength(e.target.value.length);
     }, []);
+
+    // 직접 작성할래요 100자 이상시 scroll to top
+    const detailQuestionEl = useRef();
+    const onBlurDetailQuestion = useCallback(() => {
+        if (detailQuestion.length >= 100) {
+            detailQuestionEl.current.scrollTo(0, 0);
+        }
+    }, [detailQuestion]);    
 
     // 이전 질문 확인하기 바텀시트
     const [beforeQuestionOpen, setBeforeQuestionOpen] = useState(false);
@@ -178,7 +194,7 @@ function ChatRequestForm() {
                                 {detailQuestionLength}/{detailQuestionMaxLength}자 (공백포함 최소 {detailQuestionMinLength}자)
                             </div>
                             <InputTextAreaWraps>
-                                <InputTextAreas value={detailQuestion} onChange={onChangeDetailQuestion} maxLength={detailQuestionMaxLength} fontSize={16} minHeight={327} placeholder={' '}></InputTextAreas>
+                                <InputTextAreas value={detailQuestion} onChange={onChangeDetailQuestion} maxLength={detailQuestionMaxLength} ref={detailQuestionEl} onBlur={onBlurDetailQuestion} fontSize={16} minHeight={327} placeholder={' '}></InputTextAreas>
                                 <InputTextAreaPlaceHolders>
                                     안녕하세요, 커리어 전환을 고민하고 있는 현재 MBA 재학생입니다. 
                                     <br/>
@@ -207,7 +223,7 @@ function ChatRequestForm() {
                             <div className='form-message-length'>
                                 {messageLength}/{messageMaxLength}자
                             </div>                            
-                            <InputTextAreas value={message} onChange={onChangeMessage} maxLength={messageMaxLength} fontSize={16} placeholder={'가장 궁금한 내용을 포함하여 파트너에게 미리 전하고 싶은 메시지를 자유롭게 작성해 보세요.'}></InputTextAreas>
+                            <InputTextAreas value={message} onChange={onChangeMessage} maxLength={messageMaxLength} ref={messageEl} onBlur={onBlurMessage} fontSize={16} placeholder={'가장 궁금한 내용을 포함하여 파트너에게 미리 전하고 싶은 메시지를 자유롭게 작성해 보세요.'}></InputTextAreas>
                         </div>
                     </article>
                 </>
