@@ -312,6 +312,34 @@ export const InputTextAreas = styled.textarea`
     }
 `;
 
+export const InputTextAreaWraps = styled.div`
+    position: relative;
+
+    > textarea {
+        background: transparent;
+
+        &:not(:placeholder-shown) {
+            background: ${slate100};
+        }
+    }
+`;
+
+export const InputTextAreaPlaceHolders = styled.div`
+    z-index: -1;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    padding: 16px 20px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    background: ${slate100};
+    color: ${midnight400};
+    font-size: 16px;
+    word-break: break-all;
+`;
+
 export const LabelSchedules = styled.div`
     > p {
         margin-bottom: 4px;
