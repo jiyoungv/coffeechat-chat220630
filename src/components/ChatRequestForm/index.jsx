@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback, useMemo } from 'react';
+import parse from 'html-react-parser';
 import { FieldTitles, Dividers, Buttons, InputTextAreas } from '../../styles/Common';
 import ChatRequestForms from './Style';
 import SimpleQuestionList from '../SimpleQuestionList';
@@ -177,7 +178,7 @@ function ChatRequestForm() {
                             <div className='form-detail-question-length'>
                                 {detailQuestionLength}/{detailQuestionMaxLength}자 (공백포함 최소 {detailQuestionMinLength}자)
                             </div>                        
-                            <InputTextAreas value={detailQuestion} onChange={onChangeDetailQuestion} maxLength={detailQuestionMaxLength} fontSize={16} minHeight={327} placeholder={'안녕하세요, 커리어 전환을 고민하고 있는 현재 MBA 재학생입니다.\n\nQ. 대기업에서 해외 MBA 후 컨설팅으로 가는 케이스가 많은가요?\nQ. 최근 컨설턴트들의 넥스트 커리어는 어떻게 되나요?\nQ. 스타트업로의 이동이 정말 많은 편인가요? 포지션은 전략일까요?'}></InputTextAreas>
+                            <InputTextAreas value={detailQuestion} onChange={onChangeDetailQuestion} maxLength={detailQuestionMaxLength} fontSize={16} minHeight={327} placeholder={parse('안녕하세요, 커리어 전환을 고민하고 있는 현재 MBA 재학생입니다.&#10;&#10;Q. 대기업에서 해외 MBA 후 컨설팅으로 가는 케이스가 많은가요?&#10;Q. 최근 컨설턴트들의 넥스트 커리어는 어떻게 되나요?&#10;Q. 스타트업로의 이동이 정말 많은 편인가요? 포지션은 전략일까요?')}></InputTextAreas>
                         </div>
                     }
                 </div>
